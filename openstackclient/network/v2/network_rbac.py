@@ -67,6 +67,11 @@ def _get_attrs(client_manager, parsed_args):
         object_id = network_client.find_address_group(
             parsed_args.rbac_object,
             ignore_missing=False).id
+    if parsed_args.type == 'bgpvpn':
+        # BPGVPN will be available only when
+        # bgpvn extension is enabled
+        if network_client.find_extension('rbac-bgpvpn'):
+            object_id = parsed_args.rbac_object
 
     attrs['object_id'] = object_id
 
@@ -107,10 +112,10 @@ class CreateNetworkRBAC(command.ShowOne, common.NeutronCommandWithExtraArgs):
             '--type',
             metavar="<type>",
             required=True,
-            choices=['address_group', 'address_scope', 'security_group',
-                     'subnetpool', 'qos_policy', 'network'],
+            choices=['address_group', 'address_scope', 'bgpvpn',
+                     'security_group', 'subnetpool', 'qos_policy', 'network'],
             help=_('Type of the object that RBAC policy '
-                   'affects ("address_group", "address_scope", '
+                   'affects ("address_group", "address_scope", "bgpvpn" '
                    '"security_group", "subnetpool", "qos_policy" or '
                    '"network")')
         )
@@ -203,11 +208,11 @@ class ListNetworkRBAC(command.Lister):
         parser.add_argument(
             '--type',
             metavar='<type>',
-            choices=['address_group', 'address_scope', 'security_group',
-                     'subnetpool', 'qos_policy', 'network'],
+            choices=['address_group', 'address_scope', 'bgpvpn',
+                     'security_group', 'subnetpool', 'qos_policy', 'network'],
             help=_('List network RBAC policies according to '
                    'given object type ("address_group", "address_scope", '
-                   '"security_group", "subnetpool", "qos_policy" or '
+                   '"bgpvpn", "security_group", "subnetpool", "qos_policy" or '
                    '"network")')
         )
         parser.add_argument(
